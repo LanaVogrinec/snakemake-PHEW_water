@@ -1,0 +1,5 @@
+name: cutadapt_env
+channels:
+  - bioconda
+dependencies:
+  - cutadapt=5.1

@@ -4,34 +4,49 @@
 # in particular regarding the standardized folder structure mentioned there.
 
 # conda activate snakemake
-# snakemake --use-conda -cores 60 -k -p
+# snakemake --use-conda --cores 60 -k -p
 
 
 import os
 import pandas as pd
 
 
-
+#Define config file
 configfile: "config/config.yaml"
 
-
+#Define sample list
 samples = pd.read_table(config["samples"])
 
+# Define base directory for results
+RESULTS_DIR = "results/subsampled"
 
 # Define the final output rule
 rule all:
-   input:
-        expand("results/{sample_ID}/05_{sample_ID}_meganizer_read_classification.tsv", sample_ID=samples["samples"]),
-        expand("results/{sample_ID}/05_{sample_ID}_meganizer_class_count.tsv", sample_ID=samples["samples"]),       
-        
-        
+    input:
+        RESULTS_DIR + "/analysis/clusters_with_taxonomy_wo_singletons.tsv",
+        RESULTS_DIR + "/analysis/clusters_with_taxonomy_singletons.tsv",
+        RESULTS_DIR + "/analysis/blast_pairs_intra_clusters.tsv"
+                
         
 ##### Modules #####
-include: "rules/trim.smk"
+include: "rules/subsample_reads.smk"
+include: "rules/trimmomatic.smk"
+include: "rules/cutadapt.smk"
 include: "rules/spades.smk"
-include: "rules/diamond.smk"
-include: "rules/megan_meganizer.smk"
-include: "rules/megan_export.smk"
+include: "rules/mmseqs2.smk"
+include: "rules/mmseqs2_tsv.smk"
+include: "rules/rename_contigs.smk"
+include: "rules/merge_contigs.smk"
+include: "rules/merge_taxonomy_tables.smk"
+include: "rules/extract_viral_contigs.smk"
+include: "rules/extract_unclassified_contigs.smk"
+include: "rules/blast.smk"
+include: "rules/clustering.smk"
+include: "rules/merge_taxonomy_clusters.smk"
+include: "rules/split_clusters.smk"
+include: "rules/annotate_clusters_blast.smk"
+#include: "rules/extract_viral_clusters.smk"
+
 
 
 
