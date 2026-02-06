@@ -1,29 +1,25 @@
 rule clustering:
     input:
-        f = RESULTS_DIR + "/merged/viral_contigs.fasta",
-        b = RESULTS_DIR + "/merged/blastn_pairs.tsv"
+        fasta = RESULTS_DIR + "/merged/viral_contigs.fasta",
+        edges = RESULTS_DIR + "/merged/edges_noApr24_ANI90_AF85.tsv"
     output:
-        edges    = RESULTS_DIR + "/merged/edges.txt",
-        filtered = RESULTS_DIR + "/merged/filtered_blastn_pairs.tsv",
-        clusters = RESULTS_DIR + "/merged/clusters.tsv"
+        clusters = RESULTS_DIR + "/merged/leiden_clusters_noApr24_ANI90_AF85.tsv",
+        stats    = RESULTS_DIR + "/merged/leiden_stats_noApr24_ANI90_AF85.tsv"
     params:
-        min_identity = 90.0,
-        min_length = 150
+        resolution = 1.0
     log:
-        logO = "logs/clustering/merged.log",
-        logE = "logs/clustering/merged.err.log"
+        logO = "logs/leiden_clustering/merged.log",
+        logE = "logs/leiden_clustering/merged.err.log"
     conda:
         "../envs/clustering_env.yaml"
-    threads: 30
+    threads: 1
     shell:
         """
         python workflow/scripts/clustering_script.py \
-            --fasta {input.f} \
-            --blast {input.b} \
-            --edges {output.edges} \
-            --filtered {output.filtered} \
+            --fasta {input.fasta} \
+            --edges {input.edges} \
             --clusters {output.clusters} \
-            --min_identity {params.min_identity} \
-            --min_length {params.min_length} \
+            --stats {output.stats} \
+            --resolution {params.resolution} \
             > {log.logO} 2> {log.logE}
         """

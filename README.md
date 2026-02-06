@@ -39,12 +39,30 @@ Modify the configuration file (config/config.yaml) and the Snakefile (workflow/S
         snakemake --use-conda --cores <num_cores> 
 
 ## Workflow
+Per sample:
+1. Trimming of illumina adapters + QC with trimmomatic (trimmomatic.smk)
+2. Trimming of preamplification adapters with cutadapt (cutadapt.smk)
+3. Aseembly with SPAdes (--metaspades.py) (spades.smk)
+4. Determine taxonomic classification for each contig with mmseqs2 (mmseqs2.smk)
+5. Transform the results of the mmseqs2 (database) into a tsv file (mmseqs2_tsv.smk)
+6. Rename contigs to include the sample name at the beginning (rename_contigs.smk)
+7. Merge all contigs from all samples together into one file (merge_contigs.smk)
 
-1. Quality control and adapter trimming with [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)
-2. De Novo Assembly with [SPAdes](https://bio.tools/spades)
-3. Search for similarity against non-redundant (NR) protein database with [Diamond](https://bio.tools/diamond) blastx
-4. Mapping reads to contigs with [to be added]
-5. Assigning taxonomy with [Megan6] (https://www.computomics.com/services/megan6.html).
+Per merged contigs
+8. Merge the name of each contig with its associated taxonomy into one combined file (merge_taxonomy_tables.tsv)
+9. Extract only contigs that were classified as viral with mmseqs ('Viruses') (extract_viral_contigs.smk)
+10. Perform an all-vs-all blastn on all viral contigs (blast.smk)
+11. Cluster the contigs based on blastn all-vs-all results and a network graph (clustering.smk)
+12. Merge the information about cluster membership with the taxonomy per contig (merge_taxonomy_clusters.smk)
+13. Split the file of clusters with taxonomy into only clusters > 1 contig and singleton clusters (split_clusters.smk)
+14. Merge the information on pairwise hits from blastn with cluster membership (annotate_clusters_blast.smk)
+--- somewhere here we need to include automated hybrid cluster breaking ? ---
+15. Map reads per sample to all merged contigs, 90 % identity threshold (viral + non-viral) (bbmap_map.smk)
+16. Filter only for reads that mapped with 95 % identity, 95 % aligned fraction (coverm_quant_bbmap.smk)
+17. Select representatives of clusters based on length (longest contig per cluster) (select_cluster_representatives.smk)
+18. Extract only reads mapped to viral contigs from per-sample mapping bam files and output into F/R fastq read files (extract_viral_reads.smk)
+19. Map only viral reads to representative contigs per sample (bbmap_rep.smk)
+20. Filter only for reads that mapped with 95 % identity, 95 % aligned fraction (coverm_quant_bbmap_rep.smk)
 
 
 If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of the original repository.

@@ -1,95 +1,98 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import argparse
-import pandas as pd
 from Bio import SeqIO
-import logging
+import pandas as pd
+import igraph as ig
+import leidenalg as la
 
-# -----------------------------------------
-# Set up logging
-# -----------------------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s %(levelname)s:%(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
 
-# -----------------------------------------
-# Parse command line arguments
-# -----------------------------------------
-parser = argparse.ArgumentParser(description="Filter BLAST hits and extract clusters.")
-parser.add_argument("--fasta", required=True)
-parser.add_argument("--blast", required=True)
-parser.add_argument("--edges", required=True)
-parser.add_argument("--filtered", required=True)
-parser.add_argument("--clusters", required=True, help="Output cluster list TSV (contig -> cluster ID).")
-parser.add_argument("--min_identity", type=float, default=90.0)
-parser.add_argument("--min_length", type=int, default=200)
-args = parser.parse_args()
+def parse_args():
+    p = argparse.ArgumentParser(description="Run Leiden clustering from an edge list and report stats.")
+    p.add_argument("--fasta", required=True, help="FASTA with contigs (node list).")
+    p.add_argument("--edges", required=True, help="Edges TSV with two columns: contig_A, contig_B.")
+    p.add_argument("--clusters", required=True, help="Output clusters TSV (contig_id, cluster_id).")
+    p.add_argument("--stats", required=True, help="Output stats TSV.")
+    p.add_argument("--resolution", type=float, default=1.0, help="Leiden resolution parameter.")
+    return p.parse_args()
 
-# -----------------------------------------
-# Load BLAST table
-# -----------------------------------------
-logging.info("Loading BLAST file...")
-df = pd.read_csv(args.blast, sep="\t", header=None)
-df.columns = ["qseqid", "sseqid", "pident", "length", "qstart", "qend", "sstart", "send"]
-logging.info(f"Loaded {len(df)} total BLAST hits.")
 
-# -----------------------------------------
-# Remove self hits
-# -----------------------------------------
-df = df[df["qseqid"] != df["sseqid"]]
-logging.info(f"{len(df)} hits remaining after removing self-hits.")
+def main():
+    args = parse_args()
 
-# -----------------------------------------
-# Deduplicate hits
-# -----------------------------------------
-df["pair_key"] = df.apply(lambda row: tuple(sorted([row["qseqid"], row["sseqid"]])), axis=1)
-df = df.drop_duplicates(subset="pair_key").drop(columns=["pair_key"])
-logging.info(f"{len(df)} hits remaining after deduplication.")
+    # Nodes
+    contigs = [rec.id for rec in SeqIO.parse(args.fasta, "fasta")]
+    node_to_idx = {node: i for i, node in enumerate(contigs)}
 
-# -----------------------------------------
-# Apply thresholds
-# -----------------------------------------
-filtered_df = df[(df["pident"] >= args.min_identity) & (df["length"] > args.min_length)]
-logging.info(f"{len(filtered_df)} hits remaining after filtering at "
-             f"{args.min_identity}% identity and {args.min_length} bp.")
+    # Edges
+    edges_df = pd.read_csv(args.edges, sep="\t", header=None, names=["a", "b"])
+    edges = []
+    skipped = 0
+    for a, b in zip(edges_df["a"], edges_df["b"]):
+        if a in node_to_idx and b in node_to_idx:
+            edges.append((node_to_idx[a], node_to_idx[b]))
+        else:
+            skipped += 1
 
-# Write filtered BLAST table
-filtered_df.to_csv(args.filtered, sep="\t", index=False)
-logging.info(f"Filtered BLAST table written to {args.filtered}")
+    # Graph
+    g = ig.Graph(n=len(contigs), edges=edges, directed=False)
+    g.vs["name"] = contigs
 
-# -----------------------------------------
-# Write edge list
-# -----------------------------------------
-with open(args.edges, "w") as out:
-    for _, row in filtered_df.iterrows():
-        out.write(f"{row['qseqid']}\t{row['sseqid']}\n")
-logging.info(f"Edge list written to {args.edges}")
+    # "Before Leiden": connected components
+    comps = g.components()  # list-like of components
+    n_comp = len(comps)
+    comp_sizes = comps.sizes()
+    comp_singletons = sum(1 for s in comp_sizes if s == 1)
+    comp_multi = sum(1 for s in comp_sizes if s > 1)
 
-# -----------------------------------------
-# Extract clusters (connected components)
-# -----------------------------------------
-import networkx as nx
+    # Leiden
+    partition = la.find_partition(
+        g,
+        la.RBConfigurationVertexPartition,
+        resolution_parameter=args.resolution
+    )
+    n_leiden = len(partition)
+    leiden_sizes = [len(c) for c in partition]
+    leiden_singletons = sum(1 for s in leiden_sizes if s == 1)
+    leiden_multi = sum(1 for s in leiden_sizes if s > 1)
 
-G = nx.Graph()
-all_contigs = [record.id for record in SeqIO.parse(args.fasta, "fasta")]
-G.add_nodes_from(all_contigs)
+    # Write clusters
+    with open(args.clusters, "w") as out:
+        out.write("contig_id\tcluster_id\n")
+        for cid, community in enumerate(partition, start=1):
+            cluster_name = f"cluster_{cid}"
+            for vid in community:
+                out.write(f"{g.vs[vid]['name']}\t{cluster_name}\n")
 
-with open(args.edges) as f:
-    for line in f:
-        q, s = line.strip().split("\t")
-        G.add_edge(q, s)
-logging.info(f"Graph constructed with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges.")
+    # Write stats (single-row TSV)
+    with open(args.stats, "w") as out:
+        out.write("\t".join([
+            "num_nodes",
+            "num_edges",
+            "edges_skipped_missing_nodes",
+            "num_connected_components",
+            "connected_component_singletons",
+            "connected_component_multi",
+            "num_leiden_clusters",
+            "leiden_singletons",
+            "leiden_multi",
+            "leiden_resolution"
+        ]) + "\n")
 
-clusters = list(nx.connected_components(G))
-logging.info(f"Identified {len(clusters)} clusters.")
+        out.write("\t".join(map(str, [
+            g.vcount(),
+            g.ecount(),
+            skipped,
+            n_comp,
+            comp_singletons,
+            comp_multi,
+            n_leiden,
+            leiden_singletons,
+            leiden_multi,
+            args.resolution
+        ])) + "\n")
 
-# Write cluster list
-with open(args.clusters, "w") as out:
-    out.write("contig_id\tcluster_id\n")
-    for i, cluster in enumerate(clusters, 1):
-        cluster_id = f"cluster_{i}"
-        for node in cluster:
-            out.write(f"{node}\t{cluster_id}\n")
-logging.info(f"Cluster list written to {args.clusters}")
+
+if __name__ == "__main__":
+    main()

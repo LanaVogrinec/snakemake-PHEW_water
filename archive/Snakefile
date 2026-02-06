@@ -19,9 +19,18 @@ RESULTS_DIR = "results"
 
 rule all:
     input:
-        RESULTS_DIR + "/merged/rep_contigs_minlen500_read_counts_noApr24_ANI90_AF85_filtered.tsv",
-        RESULTS_DIR + "/merged/rep_contigs_minlen500_read_counts_noApr24_ANI90_AF85_filtered_stats.tsv",
-        RESULTS_DIR + "/merged/rep_contigs_minlen500_read_counts_noApr24_ANI90_AF85_filtered.done"
+        expand(
+            RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_bbmap_rep_all_minlen_500_noApr24_ANI90_AF85.tsv",
+            sample_ID = samples["samples"]
+        ),
+        expand(
+            RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_bbmap_rep_all_minlen_500_noApr24_ANI90_AF85.filtered.bam",
+            sample_ID = samples["samples"]
+        ),
+        expand(
+            RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_bbmap_rep_all_minlen_500_noApr24_ANI90_AF85.done",
+            sample_ID = samples["samples"]
+        )
 
 
 ##### Modules #####
@@ -48,15 +57,15 @@ rule all:
 # include: ("rules/bbmap_map.smk")
 # include: ("rules/coverm_quant_bbmap.smk")
 # include: "rules/select_cluster_representatives.smk"
-#include: "rules/filter_representatives_minlen_500.smk"
+include: "rules/filter_representatives_minlen_500.smk"
 # include: ("rules/extract_viral_reads.smk")
-#include: "rules/bbmap_map_all_to_rep.smk"
-#include: "rules/coverm_quant_bbmap_all_to_rep.smk"
-# include: "rules/bbmap_map_to_luciferase.smk"
-# include: "rules/coverm_quant_bbmap_luciferase.smk"
-# include: "rules/calculate_retained_reads.smk"
-include: "rules/calculate_breadth.smk"
-include: "rules/combine_read_counts_taxonomy.smk"
-include: "rules/combine_breadth.smk"
-include: "rules/filter_CC_min_reads_breadth.smk"
+include: "rules/bbmap_map_all_to_rep.smk"
+include: "rules/coverm_quant_bbmap_all_to_rep.smk"
+#include: "rules/bbmap_map_to_luciferase.smk"
+#include: "rules/coverm_quant_bbmap_luciferase.smk"
+#include: "rules/calculate_retained_reads.smk"
+#include: "rules/calculate_breadth.smk"
+#include: "rules/combine_read_counts_taxonomy.smk"
+#include: "rules/combine_breadth.smk"
+#include: "rules/filter_CC_min_reads_breadth.smk"
 
