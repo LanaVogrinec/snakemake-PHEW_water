@@ -1,7 +1,7 @@
 rule trimmomatic:
     input:
-        r1 = RESULTS_DIR + "/{sample_ID}/00_{sample_ID}_subsampled_1.fq.gz",
-        r2 = RESULTS_DIR + "/{sample_ID}/00_{sample_ID}_subsampled_2.fq.gz",
+        r1 = "resources/{sample_ID}/{sample_ID}_1.fq.gz",
+        r2 = "resources/{sample_ID}/{sample_ID}_2.fq.gz",
         iclip = "resources/TruSeq3-PE.fa"
     output:
         tp1 = RESULTS_DIR + "/{sample_ID}/01_{sample_ID}_trim_truseq_1_paired.fq.gz",

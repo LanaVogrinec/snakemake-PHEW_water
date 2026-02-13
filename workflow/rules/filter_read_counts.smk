@@ -1,7 +1,7 @@
 rule filter_read_counts:
     input:
-        samples = RESULTS_DIR + "/merged/reps_read_counts_samples.tsv.tsv",
-        carry-over = RESULTS_DIR + "/merged/reps_read_counts_carry-over.tsv",
+        samples = RESULTS_DIR + "/merged/reps_read_counts_samples.tsv",
+        carryover = RESULTS_DIR + "/merged/reps_read_counts_carry-over.tsv",
         breadth = RESULTS_DIR + "/merged/merged_breadth.tsv",
         mapping = RESULTS_DIR + "/merged/carry-over_matches.tsv"
     output:
@@ -19,7 +19,7 @@ rule filter_read_counts:
         """
         python workflow/scripts/filter_read_counts.py \
             --samples {input.samples} \
-            --carryovers {input.carryovers} \
+            --carryover {input.carryover} \
             --breadth {input.breadth} \
             --mapping {input.mapping} \
             --out-filtered {output.filtered} \

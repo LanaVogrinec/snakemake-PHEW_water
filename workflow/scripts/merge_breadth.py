@@ -5,14 +5,17 @@ import pandas as pd
 import argparse
 import os
 
+def parse_args():
+    p = argparse.ArgumentParser(description="Merge per-sample breadth files into a single matrix")
+    p.add_argument("--breadth-files", nargs="+", required=True, help="List of per-sample breadth files")
+    p.add_argument("--out", required=True, help="Output breadth matrix file")
+    return p.parse_args()
+
 def log(msg):
     print(f"[INFO] {msg}", flush=True)
 
 def main():
-    parser = argparse.ArgumentParser(description="Merge per-sample breadth files into a single matrix")
-    parser.add_argument("--breadth-files", nargs="+", required=True, help="List of per-sample breadth files")
-    parser.add_argument("--out", required=True, help="Output breadth matrix file")
-    args = parser.parse_args()
+    args = parse_args()
 
     if len(args.breadth_files) == 0:
         raise FileNotFoundError("No breadth files provided!")

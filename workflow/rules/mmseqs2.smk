@@ -16,7 +16,7 @@ rule mmseqs2:
     threads: 30
     shell:
         r"""
-        mmseqs createdb {input.f} {params.queryprefix} \
+        mmseqs createdb {input.f} {params.qprefix} \
           > {log.logO} 2> {log.logE}
 
         mmseqs taxonomy \

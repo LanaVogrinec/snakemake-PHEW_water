@@ -1,5 +1,7 @@
 name: cutadapt_env
 channels:
   - bioconda
+  - conda-forge
+  - defaults
 dependencies:
   - cutadapt=5.1
