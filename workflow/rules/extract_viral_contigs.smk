@@ -8,7 +8,7 @@ rule extract_viral_contigs:
         logO = "logs/extract_viral_contigs/extract_viral_contigs.log",
         logE = "logs/extract_viral_contigs/extract_viral_contigs.err.log"
     conda:
-        "../envs/clustering_env.yaml"
+        "../envs/core_env.yaml"
     shell:
         """
         python workflow/scripts/extract_viral_contigs.py \

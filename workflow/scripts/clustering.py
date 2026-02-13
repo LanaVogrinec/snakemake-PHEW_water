@@ -6,7 +6,7 @@ from Bio import SeqIO
 import pandas as pd
 import igraph as ig
 import leidenalg as la
-
+from datetime import datetime
 
 def parse_args():
     p = argparse.ArgumentParser(description="Run Leiden clustering from an edge list and report stats.")
@@ -17,15 +17,17 @@ def parse_args():
     p.add_argument("--resolution", type=float, default=1.0, help="Leiden resolution parameter.")
     return p.parse_args()
 
+def log(msg):
+    print(f"[{datetime.now():%Y-%m-%d %H:%M:%S}] {msg}", flush=True)
 
 def main():
     args = parse_args()
 
-    # Nodes
+    log("Reading FASTA and preparing nodes")
     contigs = [rec.id for rec in SeqIO.parse(args.fasta, "fasta")]
     node_to_idx = {node: i for i, node in enumerate(contigs)}
 
-    # Edges
+    log("Reading edges")
     edges_df = pd.read_csv(args.edges, sep="\t", header=None, names=["a", "b"])
     edges = []
     skipped = 0
@@ -35,18 +37,18 @@ def main():
         else:
             skipped += 1
 
-    # Graph
+    log("Building graph")
     g = ig.Graph(n=len(contigs), edges=edges, directed=False)
     g.vs["name"] = contigs
 
-    # "Before Leiden": connected components
-    comps = g.components()  # list-like of components
+    log("Calculating connected components")
+    comps = g.components()
     n_comp = len(comps)
     comp_sizes = comps.sizes()
     comp_singletons = sum(1 for s in comp_sizes if s == 1)
     comp_multi = sum(1 for s in comp_sizes if s > 1)
 
-    # Leiden
+    log("Running Leiden clustering")
     partition = la.find_partition(
         g,
         la.RBConfigurationVertexPartition,
@@ -57,7 +59,7 @@ def main():
     leiden_singletons = sum(1 for s in leiden_sizes if s == 1)
     leiden_multi = sum(1 for s in leiden_sizes if s > 1)
 
-    # Write clusters
+    log(f"Writing clusters to {args.clusters}")
     with open(args.clusters, "w") as out:
         out.write("contig_id\tcluster_id\n")
         for cid, community in enumerate(partition, start=1):
@@ -65,7 +67,7 @@ def main():
             for vid in community:
                 out.write(f"{g.vs[vid]['name']}\t{cluster_name}\n")
 
-    # Write stats (single-row TSV)
+    log(f"Writing stats to {args.stats}")
     with open(args.stats, "w") as out:
         out.write("\t".join([
             "num_nodes",
@@ -93,6 +95,7 @@ def main():
             args.resolution
         ])) + "\n")
 
+    log("Finished Leiden clustering script")
 
 if __name__ == "__main__":
     main()

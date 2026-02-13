@@ -9,7 +9,7 @@ rule blast:
         logE = "logs/blast/blast.err.log"
     conda:
         "../envs/blast_env.yaml"
-    threads: 60
+    threads: 40
     shell:
         """
         makeblastdb -in {input.f} -dbtype nucl \

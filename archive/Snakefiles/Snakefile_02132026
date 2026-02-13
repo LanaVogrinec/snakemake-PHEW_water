@@ -1,0 +1,62 @@
+# Main entrypoint of the workflow.
+# Please follow the best practices:
+# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html
+
+# conda activate snakemake
+# snakemake --use-conda --cores 60 -k -p
+
+import os
+import pandas as pd
+
+# Define config file
+configfile: "config/config.yaml"
+
+# Define sample list
+samples = pd.read_table(config["samples"])
+
+# Define base directory for results
+RESULTS_DIR = "results"
+
+rule all:
+    input:
+        RESULTS_DIR + "/merged/RPKM_long_minlen500_noApr24_ANI90_AF85_filtered.tsv",
+        RESULTS_DIR + "/merged/presence_absence_long_minlen500_noApr24_ANI90_AF85_filtered.tsv"
+
+##### Modules #####
+## the rules that were not used in the end should be removed in the final pipeline - marked with ()##
+# include: ("rules/subsample_reads.smk")
+# include: "rules/trimmomatic.smk"
+# include: "rules/cutadapt.smk"
+# include: "rules/spades.smk"
+# include: "rules/mmseqs2.smk"
+# include: "rules/mmseqs2_tsv.smk"
+# include: "rules/rename_contigs.smk"
+# include: "rules/merge_contigs.smk"
+# include: "rules/merge_taxonomy_tables.smk"
+# include: "rules/extract_viral_contigs.smk"
+# include: ("rules/extract_unclassified_contigs.smk")
+# include: "rules/blast.smk"
+# include: "rules/sort_and_remove_self-hits.smk"
+# include: "rules/filter_edges.smk"
+# include: "rules/clustering.smk"
+# include: "rules/merge_taxonomy_clusters.smk"
+# include: "rules/dehybridize_clusters.smk"
+# include: ("rules/annotate_clusters_blast.smk")
+# include: ("rules/extract_viral_clusters.smk")
+# include: ("rules/bbmap_map.smk")
+# include: ("rules/coverm_quant_bbmap.smk")
+# include: "rules/select_cluster_representatives.smk"
+# include: "rules/filter_representatives_minlen_500.smk"
+# include: ("rules/extract_viral_reads.smk")
+# include: "rules/bbmap_map_all_to_rep.smk"
+# include: "rules/coverm_quant_bbmap_all_to_rep.smk"
+# include: "rules/bbmap_map_to_luciferase.smk"
+# include: "rules/coverm_quant_bbmap_luciferase.smk"
+# include: "rules/calculate_retained_reads.smk"
+# include: "rules/calculate_breadth.smk"
+include: "rules/combine_read_counts_taxonomy.smk"
+# include: "rules/combine_breadth.smk"
+include: "rules/filter_CC_min_reads_breadth.smk"
+include: "rules/calculate_RPKM.smk"
+
+

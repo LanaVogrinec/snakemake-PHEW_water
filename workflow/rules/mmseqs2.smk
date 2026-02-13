@@ -6,8 +6,8 @@ rule mmseqs2:
         resultdb_idx = RESULTS_DIR + "/{sample_ID}/04_{sample_ID}_resultDB.index",
         tmpdir       = temp(directory(RESULTS_DIR + "/{sample_ID}/04_{sample_ID}_tmp"))
     params:
-        queryprefix  = RESULTS_DIR + "/{sample_ID}/04_{sample_ID}_queryDB",
-        resultprefix = RESULTS_DIR + "/{sample_ID}/04_{sample_ID}_resultDB"
+        qprefix  = RESULTS_DIR + "/{sample_ID}/04_{sample_ID}_queryDB",
+        rprefix = RESULTS_DIR + "/{sample_ID}/04_{sample_ID}_resultDB"
     log:
         logO = "logs/mmseqs2/{sample_ID}.db.log",
         logE = "logs/mmseqs2/{sample_ID}.db.err.log"
@@ -20,9 +20,9 @@ rule mmseqs2:
           > {log.logO} 2> {log.logE}
 
         mmseqs taxonomy \
-          {params.queryprefix} \
+          {params.qprefix} \
           /biodbs/mmseqs2/nr_database/nr.fnaDB \
-          {params.resultprefix} \
+          {params.rprefix} \
           {output.tmpdir} \
           --threads {threads} --tax-lineage 1 \
           >> {log.logO} 2>> {log.logE}

@@ -1,15 +1,14 @@
-rule bbmap_map_all_to_rep:
+rule bbmap_to_reps:
     input:
         r1  = RESULTS_DIR + "/{sample_ID}/02_{sample_ID}_trim_primera_1_paired.fq.gz",
         r2  = RESULTS_DIR + "/{sample_ID}/02_{sample_ID}_trim_primera_2_paired.fq.gz",
-        ref = RESULTS_DIR + "/merged/viral_representatives_noApr24_ANI90_AF85_min_500nt.fasta"
+        ref = RESULTS_DIR + "/merged/cluster_representatives_filtered_length.fasta"
     output:
-        bam   = temp(RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_rep_all_sorted_minlen_500_noApr24_ANI90_AF85.bam"),
-        bai   = temp(RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_rep_all_sorted_minlen_500_noApr24_ANI90_AF85.bam.bai"),
-        check = RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_rep_all_mapping_minlen_500_noApr24_ANI90_AF85.done"
+        bam   = temp(RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_reps.bam"),
+        bai   = temp(RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_reps.bam.bai"),
+        check = RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_reps.done"
     log:
-        logO = "logs/bbmap_rep_all_minlen_500_noApr24_ANI90_AF85/{sample_ID}.log",
-        logE = "logs/bbmap_rep_all_minlen_500_noApr24_ANI90_AF85/{sample_ID}.err.log"
+        logE = "logs/bbmap_to_reps/{sample_ID}.err.log"
     conda:
         "../envs/mapping_env.yaml"
     threads: 20

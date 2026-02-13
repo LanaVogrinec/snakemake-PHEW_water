@@ -19,44 +19,33 @@ RESULTS_DIR = "results"
 
 rule all:
     input:
-        RESULTS_DIR + "/merged/rep_contigs_minlen500_read_counts_noApr24_ANI90_AF85_filtered.tsv",
-        RESULTS_DIR + "/merged/rep_contigs_minlen500_read_counts_noApr24_ANI90_AF85_filtered_stats.tsv",
-        RESULTS_DIR + "/merged/rep_contigs_minlen500_read_counts_noApr24_ANI90_AF85_filtered.done"
-
+        RESULTS_DIR + "/merged/rpkm_long.tsv",
+        RESULTS_DIR + "/merged/presence_absence_long.tsv"
 
 ##### Modules #####
-## the rules that were not used in the end should be removed in the final pipeline - marked with ()##
-# include: ("rules/subsample_reads.smk")
-# include: "rules/trimmomatic.smk"
-# include: "rules/cutadapt.smk"
-# include: "rules/spades.smk"
-# include: "rules/mmseqs2.smk"
-# include: "rules/mmseqs2_tsv.smk"
-# include: "rules/rename_contigs.smk"
-# include: "rules/merge_contigs.smk"
-# include: "rules/merge_taxonomy_tables.smk"
-# include: "rules/extract_viral_contigs.smk"
-# include: ("rules/extract_unclassified_contigs.smk")
-# include: "rules/blast.smk"
-# include: "rules/sort_and_remove_self-hits.smk"
-# include: "rules/filter_edges.smk"
-# include: "rules/clustering.smk"
-# include: "rules/merge_taxonomy_clusters.smk"
-# include: "rules/dehybridize_clusters.smk"
-# include: ("rules/annotate_clusters_blast.smk")
-# include: ("rules/extract_viral_clusters.smk")
-# include: ("rules/bbmap_map.smk")
-# include: ("rules/coverm_quant_bbmap.smk")
-# include: "rules/select_cluster_representatives.smk"
-#include: "rules/filter_representatives_minlen_500.smk"
-# include: ("rules/extract_viral_reads.smk")
-#include: "rules/bbmap_map_all_to_rep.smk"
-#include: "rules/coverm_quant_bbmap_all_to_rep.smk"
-# include: "rules/bbmap_map_to_luciferase.smk"
-# include: "rules/coverm_quant_bbmap_luciferase.smk"
-# include: "rules/calculate_retained_reads.smk"
+include: "rules/trimmomatic.smk"
+include: "rules/cutadapt.smk"
+include: "rules/spades.smk"
+include: "rules/mmseqs2.smk"
+include: "rules/mmseqs2_tsv.smk"
+include: "rules/rename_contigs.smk"
+include: "rules/merge_contigs.smk"
+include: "rules/merge_taxonomy.smk"
+include: "rules/extract_viral_contigs.smk"
+include: "rules/blast.smk"
+include: "rules/sort_remove_self.smk"
+include: "rules/filter_edges.smk"
+include: "rules/clustering.smk"
+include: "rules/merge_taxonomy_clusters.smk"
+include: "rules/dehybridize_clusters.smk"
+include: "rules/select_reps.smk"
+include: "rules/filter_reps_length.smk"
+include: "rules/bbmap_to_reps.smk"
+include: "rules/coverm.smk"
 include: "rules/calculate_breadth.smk"
-include: "rules/combine_read_counts_taxonomy.smk"
-include: "rules/combine_breadth.smk"
-include: "rules/filter_CC_min_reads_breadth.smk"
+include: "rules/merge_read_counts.smk"
+include: "rules/merge_breadth.smk"
+include: "rules/filter_read_counts.smk"
+include: "rules/calculate_rpkm.smk"
+
 

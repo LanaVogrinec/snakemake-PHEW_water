@@ -25,7 +25,6 @@ def main():
         df = pd.read_csv(f, sep="\t", header=None, names=["contig", sample])
         dfs.append(df)
 
-    # Merge all on 'contig'
     merged = dfs[0]
     for df in dfs[1:]:
         merged = merged.merge(df, on="contig", how="outer")
