@@ -3,6 +3,7 @@
 # https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html
 
 # conda activate snakemake
+# snakemake -n (dry run)
 # snakemake --use-conda --cores 60 -k -p
 
 import os
@@ -43,8 +44,10 @@ include: "rules/filter_reps_length.smk"
 include: "rules/bbmap_to_reps.smk"
 include: "rules/coverm.smk"
 include: "rules/calculate_breadth.smk"
-include: "rules/merge_read_counts.smk"
+include: "rules/merge_read_counts_samples.smk"
+include: "rules/merge_read_counts_controls.smk"
 include: "rules/merge_breadth.smk"
+include: "rules/remove_control_reads.smk"
 include: "rules/filter_read_counts.smk"
 include: "rules/calculate_rpkm.smk"
 

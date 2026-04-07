@@ -1,13 +1,13 @@
 rule merge_read_counts_samples:
     input:
-        reps = RESULTS_DIR + "/merged/test_Apr24_DS1/cluster_representatives_list_no_DS1.tsv",
+        reps = RESULTS_DIR + "/merged/cluster_representatives_list.tsv",
         taxonomy = RESULTS_DIR + "/merged/merged_taxonomy.tsv"
     output:
-        reps_tax = RESULTS_DIR + "/merged/test_Apr24_DS1/cluster_representatives_taxonomy_no_DS1.tsv",
-        samples = RESULTS_DIR + "/merged/test_Apr24_DS1/reps_read_counts_samples_no_DS1.tsv"
+        reps_tax = RESULTS_DIR + "/merged/cluster_representatives_taxonomy.tsv",
+        samples = RESULTS_DIR + "/merged/reps_read_counts_samples.tsv"
     log:
-        logO = "logs/merge_read_counts/test_Apr24_DS1/merge_read_counts_samples.log",
-        logE = "logs/merge_read_counts/test_Apr24_DS1/merge_read_counts_samples.err.log"
+        logO = "logs/merge_read_counts/merge_read_counts_samples.log",
+        logE = "logs/merge_read_counts/merge_read_counts_samples.err.log"
     conda:
         "../envs/core_env.yaml"
     shell:

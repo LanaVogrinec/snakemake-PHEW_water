@@ -1,12 +1,12 @@
 rule dehybridize_clusters:
     input:
-        merged = RESULTS_DIR + "/merged/test_Apr24_DS1/clusters_with_taxonomy_no_DS1.tsv"
+        merged = RESULTS_DIR + "/merged/clusters_with_taxonomy_.tsv"
     output:
-        final_assign = RESULTS_DIR + "/merged/test_Apr24_DS1/clusters_non-hybrid_no_DS1.tsv",
-        progress     = RESULTS_DIR + "/merged/test_Apr24_DS1/dehybridization_summary_no_DS1.tsv"
+        final_assign = RESULTS_DIR + "/merged/clusters_non-hybrid.tsv",
+        progress     = RESULTS_DIR + "/merged/dehybridization_summary.tsv"
     log:
-        logO = "logs/dehybridize_clusters/test_Apr24_DS1/dehybridize_clusters.log",
-        logE = "logs/dehybridize_clusters/test_Apr24_DS1/dehybridize_clusters.err.log"
+        logO = "logs/dehybridize_clusters/dehybridize_clusters.log",
+        logE = "logs/dehybridize_clusters/dehybridize_clusters.err.log"
     conda:
         "../envs/core_env.yaml"
     shell:

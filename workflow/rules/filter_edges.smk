@@ -1,18 +1,18 @@
 rule filter_edges:
     input:
         fasta = RESULTS_DIR + "/merged/viral_contigs.fasta",
-        blast = RESULTS_DIR + "/merged/test_Apr24_DS1/blastn_pairs_sorted_no_self_no_DS1.tsv.gz"
+        blast = RESULTS_DIR + "/merged/test_Apr24_DS1/blastn_pairs_sorted_no_self.tsv.gz"
     output:
-        pairs = RESULTS_DIR + "/merged/test_Apr24_DS1/blastn_pairs_sorted_no_self_filtered_no_DS1.tsv",
-        edges = RESULTS_DIR + "/merged/test_Apr24_DS1/edges_filtered_no_DS1.tsv"
+        pairs = RESULTS_DIR + "/merged/test_Apr24_DS1/blastn_pairs_sorted_no_self_filtered.tsv",
+        edges = RESULTS_DIR + "/merged/test_Apr24_DS1/edges_filtered.tsv"
     params:
         min_ani = 90.0,
         filter_mode = "AF",
         min_hsp_len = 150,
         min_af = 0.85
     log:
-        logO = "logs/filter_edges/test_Apr24_DS1/filter_edges.log",
-        logE = "logs/filter_edges/test_Apr24_DS1/filter_edges.log"
+        logO = "logs/filter_edges/filter_edges.log",
+        logE = "logs/filter_edges/filter_edges.log"
     conda:
         "../envs/core_env.yaml"
     shell:

@@ -1,12 +1,12 @@
 rule merge_taxonomy_clusters:
     input:
-        clusters = RESULTS_DIR + "/merged/test_Apr24_DS1/clusters_no_DS1.tsv",
+        clusters = RESULTS_DIR + "/merged/clusters.tsv",
         taxonomy = RESULTS_DIR + "/merged/merged_taxonomy.tsv"
     output:
-        merged = RESULTS_DIR + "/merged/test_Apr24_DS1/clusters_with_taxonomy_no_DS1.tsv"
+        merged = RESULTS_DIR + "/merged/clusters_with_taxonomy.tsv"
     log:
-        logO = "logs/merge_taxonomy_clusters/test_Apr24_DS1/merge_taxonomy_clusters.log",
-        logE = "logs/merge_taxonomy_clusters/test_Apr24_DS1/merge_taxonomy_clusters.err.log"
+        logO = "logs/merge_taxonomy_clusters/merge_taxonomy_clusters.log",
+        logE = "logs/merge_taxonomy_clusters/merge_taxonomy_clusters.err.log"
     conda:
         "../envs/core_env.yaml"
     shell:

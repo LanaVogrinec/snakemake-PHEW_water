@@ -2,13 +2,13 @@ rule bbmap_to_reps:
     input:
         r1  = RESULTS_DIR + "/{sample_ID}/02_{sample_ID}_trim_primera_1_paired.fq.gz",
         r2  = RESULTS_DIR + "/{sample_ID}/02_{sample_ID}_trim_primera_2_paired.fq.gz",
-        ref = RESULTS_DIR + "/merged/test_Apr24_DS1/cluster_representatives_filtered_length_no_DS1.fasta"
+        ref = RESULTS_DIR + "/merged/cluster_representatives_filtered_length.fasta"
     output:
-        bam   = temp(RESULTS_DIR + "/{sample_ID}/test_Apr24_DS1/07_{sample_ID}_bbmap_reps_no_DS1.bam"),
-        bai   = temp(RESULTS_DIR + "/{sample_ID}/test_Apr24_DS1/07_{sample_ID}_bbmap_reps_no_DS1.bam.bai"),
-        check = RESULTS_DIR + "/{sample_ID}/test_Apr24_DS1/07_{sample_ID}_bbmap_reps_no_DS1.done"
+        bam   = temp(RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_reps.bam"),
+        bai   = temp(RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_reps.bam.bai"),
+        check = RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_reps.done"
     log:
-        logE = "logs/bbmap_to_reps/test_Apr24_DS1/{sample_ID}.err.log"
+        logE = "logs/bbmap_to_reps/{sample_ID}.err.log"
     conda:
         "../envs/mapping_env.yaml"
     threads: 20

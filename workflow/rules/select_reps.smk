@@ -1,14 +1,14 @@
 rule select_reps:
     input:
         fasta    = RESULTS_DIR + "/merged/viral_contigs.fasta",
-        clusters = RESULTS_DIR + "/merged/test_Apr24_DS1/clusters_non-hybrid_no_DS1.tsv"
+        clusters = RESULTS_DIR + "/merged/clusters_non-hybrid.tsv"
     output:
-        reps_fasta = RESULTS_DIR + "/merged/test_Apr24_DS1/cluster_representatives_no_DS1.fasta",
-        reps_tsv   = RESULTS_DIR + "/merged/test_Apr24_DS1/cluster_representatives_list_no_DS1.tsv",
-        stats      = RESULTS_DIR + "/merged/test_Apr24_DS1/cluster_representatives_stats_no_DS1.tsv"
+        reps_fasta = RESULTS_DIR + "/merged/cluster_representatives.fasta",
+        reps_tsv   = RESULTS_DIR + "/merged/cluster_representatives_list.tsv",
+        stats      = RESULTS_DIR + "/merged/cluster_representatives_stats.tsv"
     log:
-        logO = "logs/select_reps/test_Apr24_DS1/select_reps.log",
-        logE = "logs/select_reps/test_Apr24_DS1/select_reps.err.log"
+        logO = "logs/select_reps/select_reps.log",
+        logE = "logs/select_reps/select_reps.err.log"
     conda:
         "../envs/core_env.yaml"
     shell:
