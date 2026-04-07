@@ -1,15 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import pandas as pd
 import argparse
+import pandas as pd
 import os
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Merge per-sample breadth files into a single matrix")
-    p.add_argument("--breadth-files", nargs="+", required=True, help="List of per-sample breadth files")
-    p.add_argument("--out", required=True, help="Output breadth matrix file")
-    return p.parse_args()
+    parser = argparse.ArgumentParser(description="Merge per-sample breadth files into a single matrix.")
+    parser.add_argument(
+        "--breadth-files",
+        nargs="+",
+        required=True,
+        help="List of per-sample breadth TSV files."
+    )
+    parser.add_argument(
+        "--out",
+        required=True,
+        help="Output TSV file for merged breadth matrix."
+    )
+    return parser.parse_args()
 
 def log(msg):
     print(f"[INFO] {msg}", flush=True)
@@ -17,24 +26,23 @@ def log(msg):
 def main():
     args = parse_args()
 
-    if len(args.breadth_files) == 0:
-        raise FileNotFoundError("No breadth files provided!")
-
-    log(f"Found {len(args.breadth_files)} breadth files")
-
     dfs = []
     for f in args.breadth_files:
-        sample = os.path.basename(os.path.dirname(f))
-        df = pd.read_csv(f, sep="\t", header=None, names=["contig", sample])
+        # Extract sample name from two levels up (folder containing test_Apr24_DS1)
+        sample_name = os.path.basename(os.path.dirname(os.path.dirname(f)))
+        log(f"Reading {f} as sample '{sample_name}'")
+        df = pd.read_csv(f, sep="\t", header=None, names=["contig", sample_name])
+        df = df.set_index("contig")
         dfs.append(df)
 
-    merged = dfs[0]
-    for df in dfs[1:]:
-        merged = merged.merge(df, on="contig", how="outer")
+    log(f"Merging {len(dfs)} breadth files")
+    merged = pd.concat(dfs, axis=1)
+    merged = merged.fillna(0)
 
-    merged.fillna(0, inplace=True)
-    merged.to_csv(args.out, sep="\t", index=False)
-    log(f"Finished: {args.out}")
+    log(f"Writing merged breadth matrix to {args.out}")
+    merged.to_csv(args.out, sep="\t")
+
+    log("Done!")
 
 if __name__ == "__main__":
     main()

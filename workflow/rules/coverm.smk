@@ -1,14 +1,14 @@
 rule coverm:
     input:
-        bam = RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_reps.bam",
-        bai = RESULTS_DIR + "/{sample_ID}/07_{sample_ID}_bbmap_reps.bam.bai"
+        bam = RESULTS_DIR + "/{sample_ID}/test_Apr24_DS1/07_{sample_ID}_bbmap_reps_no_DS1.bam",
+        bai = RESULTS_DIR + "/{sample_ID}/test_Apr24_DS1/07_{sample_ID}_bbmap_reps_no_DS1.bam.bai"
     output:
-        tsv     = RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_filtered_reps.tsv",
-        filtered_bam = RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_filtered_reps.bam",
-        check   = RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_filtered_reps.done"
+        tsv     = RESULTS_DIR + "/{sample_ID}/test_Apr24_DS1/08_{sample_ID}_coverm_filtered_reps_no_DS1.tsv",
+        filtered_bam = RESULTS_DIR + "/{sample_ID}/test_Apr24_DS1/08_{sample_ID}_coverm_filtered_reps_no_DS1.bam",
+        check   = RESULTS_DIR + "/{sample_ID}/test_Apr24_DS1/08_{sample_ID}_coverm_filtered_reps_no_DS1.done"
     log:
-        logO = "logs/coverm/{sample_ID}.log",
-        logE = "logs/coverm/{sample_ID}.err.log"
+        logO = "logs/coverm/test_Apr24_DS1/{sample_ID}.log",
+        logE = "logs/coverm/test_Apr24_DS1/{sample_ID}.err.log"
     conda:
         "../envs/mapping_env.yaml"
     threads: 12
