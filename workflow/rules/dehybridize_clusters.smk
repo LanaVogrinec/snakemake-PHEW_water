@@ -1,6 +1,6 @@
 rule dehybridize_clusters:
     input:
-        merged = RESULTS_DIR + "/merged/clusters_with_taxonomy_.tsv"
+        merged = RESULTS_DIR + "/merged/clusters_with_taxonomy.tsv"
     output:
         final_assign = RESULTS_DIR + "/merged/clusters_non-hybrid.tsv",
         progress     = RESULTS_DIR + "/merged/dehybridization_summary.tsv"

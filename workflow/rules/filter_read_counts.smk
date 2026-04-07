@@ -1,6 +1,6 @@
 rule filter_read_counts:
     input:
-        samples = RESULTS_DIR + "/merged/reps_read_counts_samples_no_carryover.tsv",
+        samples = RESULTS_DIR + "/merged/reps_read_counts_samples.tsv",
         breadth = RESULTS_DIR + "/merged/merged_breadth.tsv"
     output:
         filtered = RESULTS_DIR + "/merged/reps_read_counts_samples_filtered.tsv",
