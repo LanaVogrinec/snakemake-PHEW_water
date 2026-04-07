@@ -28,7 +28,7 @@ First, create an appropriate project working directory on your system and enter 
 
 Then, clone the github repository:
    
-        git clone https://github.com/LanaVogrinec/snakemake-marchantia
+        git clone https://github.com/LanaVogrinec/snakemake-PHEW_water
 
 3. **Configure workflow** Modify the workflow to your needs.
 
