@@ -77,7 +77,7 @@ def main():
     viral_carryovers = reps_tax_df.copy()
 
     # Discover mapping files
-    pattern = os.path.join(args.mapping_root, "**", "08_*_coverm_filtered_reps_no_DS1.tsv")
+    pattern = os.path.join(args.mapping_root, "**", "08_*_coverm_filtered_reps.tsv")
     mapping_files = sorted(glob.glob(pattern, recursive=True))
     log(f"Found {len(mapping_files)} mapping files")
 
