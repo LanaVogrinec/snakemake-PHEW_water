@@ -1,1 +1,3 @@
 samples: config/samples.tsv
+nkis: config/nkis.tsv
+carryovers: config/carryovers.tsv
