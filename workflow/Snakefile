@@ -11,13 +11,13 @@ import pandas as pd
 
 configfile: "config/config.yaml"
 
-samples_df = pd.read_table(config["samples"])
-nkis_df = pd.read_table(config["nkis"])
-carry_df = pd.read_table(config["carryovers"])
+samples = pd.read_table(config["samples"])
+nkis = pd.read_table(config["nkis"])
+carryover = pd.read_table(config["carryovers"])
 
-sample_ids = samples_df["sample_ID"].tolist()
-nki_ids = nkis_df["sample_ID"].tolist()
-carry_ids = carry_df["sample_ID"].tolist()
+sample_ids = samples["samples"].tolist()
+nki_ids = nkis["samples"].tolist()
+carry_ids = carryover["samples"].tolist()
 
 RESULTS_DIR = "results"
 
@@ -25,6 +25,7 @@ rule all:
     input:
         RESULTS_DIR + "/merged/rpkm_long.tsv",
         RESULTS_DIR + "/merged/presence_absence_long.tsv"
+
 ##### Modules #####
 include: "rules/trimmomatic.smk"
 include: "rules/cutadapt.smk"
