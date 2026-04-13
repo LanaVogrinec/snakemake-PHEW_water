@@ -1,7 +1,6 @@
 rule merge_read_counts_controls:
     input:
         reps = RESULTS_DIR + "/merged/cluster_representatives_list.tsv",
-        taxonomy = RESULTS_DIR + "/merged/merged_taxonomy.tsv",
         nkis = expand(
             RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_filtered_reps.tsv",
             sample_ID=nki_ids
@@ -22,7 +21,6 @@ rule merge_read_counts_controls:
         """
         python workflow/scripts/merge_read_counts.py \
             --viral-reps {input.reps} \
-            --taxonomy {input.taxonomy} \
             --mode controls \
             --nki-files {input.nkis} \
             --carry-files {input.carry} \

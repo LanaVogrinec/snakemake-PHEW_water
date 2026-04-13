@@ -12,12 +12,12 @@ import pandas as pd
 configfile: "config/config.yaml"
 
 samples = pd.read_table(config["samples"])
-nkis = pd.read_table(config["nkis"])
-carryover = pd.read_table(config["carryovers"])
+#nkis = pd.read_table(config["nkis"])
+#carryover = pd.read_table(config["carryovers"])
 
 sample_ids = samples["samples"].tolist()
-nki_ids = nkis["samples"].tolist()
-carry_ids = carryover["samples"].tolist()
+#nki_ids = nkis["samples"].tolist()
+#carry_ids = carryover["samples"].tolist()
 
 RESULTS_DIR = "results"
 
