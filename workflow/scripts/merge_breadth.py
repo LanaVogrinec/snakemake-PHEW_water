@@ -3,7 +3,6 @@
 import argparse
 import pandas as pd
 import os
-import re
 
 
 def parse_args():
@@ -15,10 +14,8 @@ def parse_args():
 
 def get_sample_name(f):
     fname = os.path.basename(f)
-    m = re.match(r"09_(.+)_breadth\.tsv", fname)
-    if not m:
-        raise ValueError(f"Unexpected filename format: {fname}")
-    return m.group(1)
+    sample = fname.split("_breadth")[0].replace("09_", "")
+    return sample
 
 
 def main():
@@ -29,8 +26,8 @@ def main():
     for f in args.breadth_files:
         sample = get_sample_name(f)
 
-        df = pd.read_csv(f, sep="\t", header=None, names=["contig", sample])
-        df = df.set_index("contig")
+        df = pd.read_csv(f, sep="\t", header=None, names=["rep_contig", sample])
+        df = df.set_index("rep_contig")
 
         dfs.append(df)
 

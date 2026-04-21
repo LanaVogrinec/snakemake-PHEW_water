@@ -3,7 +3,6 @@
 
 import argparse
 import pandas as pd
-import re
 import os
 from datetime import datetime
 
@@ -24,22 +23,15 @@ CONTIG_COL = "rep_contig"
 
 
 def get_sample_cols(df):
+    """Return all sample columns (everything except metadata)."""
     return [
         c for c in df.columns
         if c not in {
             "rep_contig",
-            "rep_contig_length",
-            "singleton",
-            "contig_length"
+            "cluster_id",
+            "rep_contig_length"
         }
     ]
-
-
-def extract_contig_length(contig_name):
-    m = re.search(r"_length_(\d+)_cov_", contig_name)
-    if m:
-        return int(m.group(1))
-    raise ValueError(f"Cannot parse contig length from '{contig_name}'")
 
 
 def main():
@@ -48,14 +40,19 @@ def main():
     log(f"Reading input: {args.input}")
     df = pd.read_csv(args.input, sep="\t")
 
-    log("Extracting contig lengths")
-    df["contig_length"] = df[CONTIG_COL].apply(extract_contig_length)
+    log("Using contig lengths from column")
+    if "rep_contig_length" not in df.columns:
+        raise ValueError("Missing 'rep_contig_length' column")
+
+    df["contig_length"] = df["rep_contig_length"]
 
     log("Selecting sample columns")
     read_cols = get_sample_cols(df)
 
     if len(read_cols) == 0:
         raise ValueError("No sample columns detected")
+
+    log(f"Detected {len(read_cols)} samples")
 
     log("Calculating total reads per sample")
     total_reads = df[read_cols].sum(axis=0)

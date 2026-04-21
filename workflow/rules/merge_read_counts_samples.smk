@@ -1,6 +1,6 @@
 rule merge_read_counts_samples:
     input:
-        reps = RESULTS_DIR + "/merged/cluster_representatives_list.tsv",
+        reps = RESULTS_DIR + "/merged/cluster_representatives_filtered_length.tsv",
         coverm = expand(
             RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_filtered_reps.tsv",
             sample_ID=sample_ids

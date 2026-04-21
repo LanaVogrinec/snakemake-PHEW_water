@@ -36,14 +36,14 @@ def ensure_int(df, cols):
     return df
 
 
-def apply_read_breadth_filter(counts_df, rep_contig_series, breadth_df, min_reads, min_breadth):
+def apply_read_breadth_filter(counts_df, breadth_df, min_reads, min_breadth):
     out = counts_df.copy()
 
     for sample in out.columns:
         if sample not in breadth_df.columns:
             continue
 
-        breadth_vals = rep_contig_series.map(breadth_df[sample]).fillna(0)
+        breadth_vals = out.index.map(breadth_df[sample]).fillna(0)
 
         low_reads = out[sample] < min_reads
         low_breadth = breadth_vals < min_breadth
@@ -61,24 +61,18 @@ def main():
     args = parse_args()
 
     log("Reading samples table")
-    samples = pd.read_csv(args.samples, sep="\t").set_index("cluster_id")
+    samples = pd.read_csv(args.samples, sep="\t").set_index("rep_contig")
 
     sample_cols = get_readcount_cols(samples)
     samples = ensure_int(samples, sample_cols)
 
     log("Reading breadth table")
-    breadth = pd.read_csv(args.breadth, sep="\t")
-    breadth = breadth[breadth["contig"] != "contig"].copy()
-    breadth["contig"] = breadth["contig"].astype(str).str.replace(r"_cluster_\d+$", "", regex=True)
-    breadth = breadth.set_index("contig")
+    breadth = pd.read_csv(args.breadth, sep="\t").set_index("rep_contig")
     breadth = breadth.apply(pd.to_numeric, errors="coerce").fillna(0)
-
-    rep_contigs = samples["rep_contig"].astype(str).str.replace(r"_cluster_\d+$", "", regex=True)
 
     log(f"Applying min_reads={args.min_reads} and min_breadth={args.min_breadth}")
     filtered_counts = apply_read_breadth_filter(
         samples[sample_cols],
-        rep_contigs,
         breadth,
         args.min_reads,
         args.min_breadth
@@ -86,14 +80,15 @@ def main():
 
     filtered_out = samples.copy()
     filtered_out[sample_cols] = filtered_counts
-    filtered_out.to_csv(args.out_filtered, sep="\t", index=False)
+    filtered_out.to_csv(args.out_filtered, sep="\t")
 
     stats = pd.DataFrame({
         "step": ["after_read_breadth"],
-        "vOTU_detections": [count_vOTU_detections(filtered_counts)]
+        "vOTU_detections": [(filtered_counts > 0).sum().sum()]
     })
 
     stats.to_csv(args.out_stats, sep="\t", index=False)
+
     log("Done.")
 
 

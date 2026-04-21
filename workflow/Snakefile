@@ -26,6 +26,7 @@ rule all:
         RESULTS_DIR + "/merged/rpkm_long.tsv",
         RESULTS_DIR + "/merged/presence_absence_long.tsv"
 
+
 ##### Modules #####
 include: "rules/trimmomatic.smk"
 include: "rules/cutadapt.smk"

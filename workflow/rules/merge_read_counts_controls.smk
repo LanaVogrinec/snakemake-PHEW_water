@@ -1,6 +1,6 @@
 rule merge_read_counts_controls:
     input:
-        reps = RESULTS_DIR + "/merged/cluster_representatives_list.tsv",
+        reps = RESULTS_DIR + "/merged/cluster_representatives_filtered_length.tsv",
         nkis = expand(
             RESULTS_DIR + "/{sample_ID}/08_{sample_ID}_coverm_filtered_reps.tsv",
             sample_ID=nki_ids

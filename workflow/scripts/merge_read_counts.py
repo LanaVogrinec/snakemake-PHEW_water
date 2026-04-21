@@ -38,13 +38,12 @@ def load_coverm(file):
     sample = file.split("/")[-1].split("_coverm")[0].replace("08_", "")
 
     out = df[["Contig", read_col]].copy()
-    out.columns = ["contig_id", sample]
+    out.columns = ["rep_contig", sample]
 
-    out["contig_id"] = out["contig_id"].apply(clean_id)
-    out["contig_id"] = out["contig_id"].str.replace(r"_cluster_.*$", "", regex=True)
-    out["contig_id"] = out["contig_id"].apply(clean_id)
+    # IMPORTANT: only clean whitespace, DO NOT modify biological IDs
+    out["rep_contig"] = out["rep_contig"].apply(clean_id)
 
-    return out.set_index("contig_id")
+    return out.set_index("rep_contig")
 
 
 def merge(files):
@@ -68,19 +67,23 @@ def main():
     if args.mode == "samples":
         merged = merge(args.sample_list)
         out = base.join(merged, how="left").fillna(0)
-        out.to_csv(args.out, sep="\t")
+
+        out = out.reset_index()
+        out.to_csv(args.out, sep="\t", index=False)
 
     elif args.mode == "controls":
 
         if args.nki_files:
             nki = merge(args.nki_files)
             nki_out = base.join(nki, how="left").fillna(0)
-            nki_out.to_csv(args.out_nki, sep="\t")
+            nki_out = nki_out.reset_index()
+            nki_out.to_csv(args.out_nki, sep="\t", index=False)
 
         if args.carry_files:
             carry = merge(args.carry_files)
             carry_out = base.join(carry, how="left").fillna(0)
-            carry_out.to_csv(args.out_carry, sep="\t")
+            carry_out = carry_out.reset_index()
+            carry_out.to_csv(args.out_carry, sep="\t", index=False)
 
     else:
         raise ValueError(f"Unknown mode: {args.mode}")
