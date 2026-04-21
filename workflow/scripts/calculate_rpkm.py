@@ -23,7 +23,6 @@ CONTIG_COL = "rep_contig"
 
 
 def get_sample_cols(df):
-    """Return all sample columns (everything except metadata)."""
     return [
         c for c in df.columns
         if c not in {
@@ -40,11 +39,9 @@ def main():
     log(f"Reading input: {args.input}")
     df = pd.read_csv(args.input, sep="\t")
 
-    log("Using contig lengths from column")
+    log("Checking required column")
     if "rep_contig_length" not in df.columns:
         raise ValueError("Missing 'rep_contig_length' column")
-
-    df["contig_length"] = df["rep_contig_length"]
 
     log("Selecting sample columns")
     read_cols = get_sample_cols(df)
@@ -62,7 +59,7 @@ def main():
 
     for col in read_cols:
         rpkm_df[col] = (
-            df[col] / df["contig_length"] * 1e3 / (total_reads[col] / 1e6)
+            df[col] / df["rep_contig_length"] * 1e3 / (total_reads[col] / 1e6)
         )
 
     log("Reshaping to long format")
