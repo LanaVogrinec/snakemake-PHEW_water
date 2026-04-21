@@ -23,7 +23,9 @@ rule merge_read_counts_controls:
             --viral-reps {input.reps} \
             --mode controls \
             --nki-files {input.nkis} \
+            --nki-names {nki_ids} \
             --carry-files {input.carry} \
+            --carry-names {carry_ids} \
             --out-nki {output.nki} \
             --out-carry {output.carryover} \
             > {log.logO} 2> {log.logE}

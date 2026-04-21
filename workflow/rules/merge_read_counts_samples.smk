@@ -17,7 +17,8 @@ rule merge_read_counts_samples:
         python workflow/scripts/merge_read_counts.py \
             --viral-reps {input.reps} \
             --mode samples \
-            --sample-list {input.coverm} \
+            --files {input.coverm} \
+            --sample-names {sample_ids} \
             --out {output.samples} \
             > {log.logO} 2> {log.logE}
         """
